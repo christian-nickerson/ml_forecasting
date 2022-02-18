@@ -1,2 +1,3 @@
-# ml_forecasting
-Exploring the accuracy of different forecasting methods on predicting a stock’s closing price.
+# Stock Price Prediction
+
+The project explores different machine learning techniques for predicting price prediction.
