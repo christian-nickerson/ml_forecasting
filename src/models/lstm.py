@@ -9,7 +9,6 @@ from keras.callbacks import EarlyStopping
 from keras.optimizer_v2.adam import Adam
 import tensorflow as tf
 import numpy as np
-import logging
 import os
 
 

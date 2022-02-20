@@ -1,6 +1,9 @@
 from data import StockData
 from pipeline import ModelTrain
 from reporting import StockChart
+from common import Log
+from datetime import timedelta
+from time import time
 import os
 
 
@@ -18,9 +21,20 @@ class StockPricePrediction:
         :param data_years: years of historical data to train model on, defaults to 10
         :type data_years: int, optional
         """
+        self.logger = Log.set_logger(f"stock prediction: {stock_symbol}")
         self.stock_symbol = stock_symbol
         self.model_name = model_name
         self.data_years = data_years
+
+    @staticmethod
+    def load_env_vars() -> None:
+        """Load local .env file if in root dir."""
+        files = [f for f in os.listdir(".") if os.path.isfile(f)]
+        print(files)
+        if ".env" in files:
+            from dotenv import load_dotenv
+
+            load_dotenv()
 
     def fetch_data(self) -> StockData:
         """Return Stock data for training.
@@ -28,6 +42,7 @@ class StockPricePrediction:
         :return: StockData for modelling
         :rtype: StockData
         """
+        self.logger.info(f"fechting price data")
         return StockData(self.stock_symbol, self.data_years)
 
     def train_model(self, data: StockData, param_samples: int = 100) -> None:
@@ -36,8 +51,11 @@ class StockPricePrediction:
         :param data: StockData instance for trianing.
         :type data: StockData
         """
+        start = time()
+        self.logger.info(f"training {self.model_name}")
         model = ModelTrain(self.model_name, data)
         model.train(param_samples)
+        self.logger.info(f"training complete: {timedelta(seconds = time() - start)}")
 
     def model_report(self, data: StockData) -> None:
         """Create model report.
@@ -46,14 +64,13 @@ class StockPricePrediction:
         :type data: StockData
         """
         chart = StockChart(self.model_name, data)
+        self.logger.info(f"creating {self.model_name} report")
         chart.create_report()
 
 
 if __name__ == "__main__":
 
-    from dotenv import load_dotenv
-
-    load_dotenv()
+    StockPricePrediction.load_env_vars()
 
     stock_prediction = StockPricePrediction(
         stock_symbol=os.getenv("STOCK_SYMBOL"),

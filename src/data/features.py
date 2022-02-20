@@ -1,5 +1,6 @@
 from pandas import DataFrame
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+import warnings
 
 
 class FeatureEngineering:
@@ -31,6 +32,7 @@ class FeatureEngineering:
     @staticmethod
     def _closing_ses(df: DataFrame) -> DataFrame:
         """Create closing simple exponential smoothing features."""
+        warnings.filterwarnings("ignore")
         for alpha in [0.2, 0.4, 0.6, 0.8, None]:
             se = SimpleExpSmoothing(df["Close"])
             se_fitted = se.fit(smoothing_level=alpha)

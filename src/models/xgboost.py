@@ -20,7 +20,7 @@ class XGB(ModelBase):
         :return: XGBoost Regressor instance
         :rtype: XGBRegressor
         """
-        return XGBRegressor(verbosity=0, seed=123)
+        return XGBRegressor(verbosity=0, seed=123, tree_method="hist")
 
     @staticmethod
     def preprocess() -> Pipeline:

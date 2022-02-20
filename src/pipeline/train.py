@@ -54,7 +54,7 @@ class ModelTrain:
             scoring="neg_mean_squared_error",
             cv=TimeSeriesSplit(n_splits=5),
             n_iter=parameter_samples,
-            n_jobs=4,
+            n_jobs=-1,
             n_points=5,
             verbose=0,
         )

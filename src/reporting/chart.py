@@ -112,6 +112,8 @@ class StockChart:
                 "Testing Residuals Histogram",
                 "Training Fitted Residuals",
                 "Testing Fitted Residuals",
+                "Training Residuals over Time",
+                "Testing Residuals over Time",
             ),
         )
 
