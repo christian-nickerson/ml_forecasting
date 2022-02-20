@@ -30,7 +30,6 @@ class StockPricePrediction:
     def load_env_vars() -> None:
         """Load local .env file if in root dir."""
         files = [f for f in os.listdir(".") if os.path.isfile(f)]
-        print(files)
         if ".env" in files:
             from dotenv import load_dotenv
 
