@@ -25,6 +25,7 @@ class LSTMNetwork(ModelBase):
     def _quiet_mode(toggle: bool = False) -> None:
         """Set Keras logging to lowest level"""
         if toggle:
+            os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
             os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
             tf.autograph.set_verbosity(3)
             tf.get_logger().setLevel("ERROR")
@@ -60,8 +61,9 @@ class LSTMNetwork(ModelBase):
         :rtype: Sequential
         """
         model = Sequential()
+        model.add(LSTM(self.features, activation="relu", input_shape=(1, self.features), return_sequences=True))
         for _ in range(layers - 1):
-            model.add(LSTM(self.features, activation="relu", input_shape=(1, self.features), return_sequences=True))
+            model.add(LSTM(self.features, activation="relu", return_sequences=True))
             model.add(Dropout(drop_out_rate))
         model.add(Dense(1))
         adam = Adam(learning_rate=learning_rate)
@@ -80,7 +82,7 @@ class LSTMNetwork(ModelBase):
 
     def fit_params(self) -> dict:
         """LSTM fit parameters"""
-        stopping = EarlyStopping(monitor="loss", patience=50)
+        stopping = EarlyStopping(monitor="loss", patience=10)
         return {"model__callbacks": [stopping]}
 
 

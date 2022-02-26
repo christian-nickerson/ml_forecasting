@@ -4,6 +4,7 @@ from reporting import StockChart
 from common import Log
 from datetime import timedelta
 from time import time
+from dotenv import load_dotenv
 import os
 
 
@@ -31,8 +32,6 @@ class StockPricePrediction:
         """Load local .env file if in root dir."""
         files = [f for f in os.listdir(".") if os.path.isfile(f)]
         if ".env" in files:
-            from dotenv import load_dotenv
-
             load_dotenv()
 
     def fetch_data(self) -> StockData:

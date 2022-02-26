@@ -2,9 +2,12 @@ from typing import Any
 from data import StockData
 from pandas import DataFrame
 from plotly.subplots import make_subplots
+from keras.models import load_model
+from common import TarZip
 import plotly.graph_objects as go
 import pathlib
 import joblib
+import os
 
 
 class StockChart:
@@ -18,8 +21,22 @@ class StockChart:
 
     def _load_model(self) -> None:
         """Load model from artifact library"""
+        self._load_joblib()
+        tf_models = ["lstm"]
+        if self.model_name in tf_models:
+            self._load_keras()
+
+    def _load_joblib(self) -> None:
+        """Load joblib model from artifact library"""
         model_file_name = f"artifacts/{self.data.stock_symbol}/{self.model_name}.sav"
         self.model = joblib.load(model_file_name)
+
+    def _load_keras(self) -> None:
+        """Load keras estimator from artifact library"""
+        file_directory = f"artifacts/{self.data.stock_symbol}/"
+        TarZip.extract(file_directory + f"{self.model_name}.tar.gz", ".")
+        self.model.best_estimator_.named_steps["model"].model = load_model(file_directory + f"{self.model_name}.h5")
+        os.remove(file_directory + f"{self.model_name}.h5")
 
     @staticmethod
     def _prepare_df(y: DataFrame, pred: DataFrame) -> DataFrame:

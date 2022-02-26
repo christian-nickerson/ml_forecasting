@@ -45,6 +45,7 @@ class FeatureEngineering:
         df = FeatureEngineering._closing_lags(df)
         df = FeatureEngineering._closing_sma(df)
         df = FeatureEngineering._closing_ses(df)
+        df = df.dropna()
         return df
 
 

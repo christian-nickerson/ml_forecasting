@@ -3,6 +3,7 @@ from models import ModelRegistry
 from skopt import BayesSearchCV
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.pipeline import Pipeline
+from common import TarZip
 import pathlib
 import joblib
 
@@ -65,9 +66,33 @@ class ModelTrain:
         :param pipeline: traineed pipeline instance to write
         :type pipeline: BayesSearchCV
         """
+        tf_models = ["lstm"]
+        if self.model_name in tf_models:
+            pipeline = self._keras_save(pipeline)
+        self._joblib_save(pipeline)
+
+    def _joblib_save(self, pipeline: BayesSearchCV) -> None:
+        """Write model to artifact library using joblib.
+
+        :param pipeline: traineed pipeline instance to write
+        :type pipeline: BayesSearchCV
+        """
         pathlib.Path(f"artifacts/{self.data.stock_symbol}/").mkdir(parents=True, exist_ok=True)
         model_file_name = f"artifacts/{self.data.stock_symbol}/{self.model_name}.sav"
         joblib.dump(pipeline, model_file_name)
+
+    def _keras_save(self, pipeline: BayesSearchCV) -> BayesSearchCV:
+        """Write keras estimator to artifact library from pipline.
+
+        :param pipeline: traineed pipeline instance to write
+        :type pipeline: BayesSearchCV
+        """
+        pathlib.Path(f"artifacts/{self.data.stock_symbol}/").mkdir(parents=True, exist_ok=True)
+        model_file_name = f"artifacts/{self.data.stock_symbol}/{self.model_name}.h5"
+        pipeline.best_estimator_.named_steps["model"].model.save(model_file_name)
+        pipeline.best_estimator_.named_steps["model"].model = None
+        TarZip.compress(model_file_name)
+        return pipeline
 
     def train(self, parameter_samples: int) -> None:
         """Train model on stock data and save to artifact library.
